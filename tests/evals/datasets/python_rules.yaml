@@ -1,0 +1,50 @@
+cases:
+  - name: PY001_prints_in_code
+    inputs:
+      file_path: irrelevant_placeholder_string.py
+      file_content_path: fixtures/python/prints_in_code.py
+    evaluators:
+      - ReviewRulePresenceEvaluator:
+          rule_id: PY001
+  - name: PY002_missing_annotations
+    inputs:
+      file_path: irrelevant_placeholder_string.py
+      file_content_path: fixtures/python/missing_annotations.py
+    evaluators:
+      - ReviewRulePresenceEvaluator:
+          rule_id: PY002
+  - name: PY003_needs_output_model
+    inputs:
+      file_path: irrelevant_placeholder_string.py
+      file_content_path: fixtures/python/needs_output_model.py
+    evaluators:
+      - ReviewRulePresenceEvaluator:
+          rule_id: PY003
+  - name: PY004_no_docstrings
+    inputs:
+      file_path: irrelevant_placeholder_string.py
+      file_content_path: fixtures/python/no_docstring.py
+    evaluators:
+      - ReviewRulePresenceEvaluator:
+          rule_id: PY004
+  - name: PY005_no_error_handling
+    inputs:
+      file_path: irrelevant_placeholder_string.py
+      file_content_path: fixtures/python/no_error_handling.py
+    evaluators:
+      - ReviewRulePresenceEvaluator:
+          rule_id: PY005
+  - name: PY012_hardcoded_api_key
+    inputs:
+      file_path: irrelevant_placeholder_string.py
+      file_content_path: fixtures/python/hardcoded_api_key.py
+    evaluators:
+      - ReviewRulePresenceEvaluator:
+          rule_id: PY012
+  - name: PY016_no_input_validation
+    inputs:
+      file_path: irrelevant_placeholder_string.py
+      file_content_path: fixtures/python/no_input_validation.py
+    evaluators:
+      - ReviewRulePresenceEvaluator:
+          rule_id: PY016

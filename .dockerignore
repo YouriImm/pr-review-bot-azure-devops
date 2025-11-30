@@ -1,0 +1,7 @@
+.venv
+.env
+.logfire
+devops/
+.idea
+.vscode
+.ruff_cache

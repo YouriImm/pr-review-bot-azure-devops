@@ -1,0 +1,70 @@
+[
+    {
+        "id": "MD001",
+        "title": "Use meaningful headings",
+        "description": "Headings must be descriptive and reflect the structure of the document. Avoid vague titles.",
+        "severity": "warning",
+        "code_smells": [
+            "Headings that do not reflect document content",
+            "Use of generic headings (e.g., 'Misc', 'Stuff')"
+        ],
+        "rule_instructions": "Be forgiving. 'Objective' or 'Introduction' is completely valid."
+
+    },
+    {
+        "id": "MD002",
+        "title": "Link references should be descriptive",
+        "description": "Links must use meaningful text instead of raw URLs or vague phrases like 'click here'.",
+        "severity": "error",
+        "code_smells": [
+            "Bare URLs in text",
+            "Link text like 'here' or 'this'"
+        ],
+        "rule_instructions": "If a bare URL is acceptable in context (e.g., reference list), do not raise a violation."
+    },
+    {
+        "id": "MD003",
+        "title": "Consistent code block formatting",
+        "description": "Code snippets must use fenced code blocks with language identifiers where applicable.",
+        "severity": "error",
+        "code_smells": [
+            "Inline code used for multi-line snippets",
+            "Missing language identifier for fenced blocks"
+        ],
+        "rule_instructions": "Be forgiving for short examples where language identifiers add no value."
+    },
+    {
+        "id": "MD004",
+        "title": "Maintain proper header hierarchy",
+        "description": "Headings must follow a logical hierarchy (e.g., # -> ## --> ###) without skipping levels unnecessarily.",
+        "severity": "error",
+        "code_smells": [
+            "Jumping from # directly to ###",
+            "Inconsistent nesting of headings"
+        ],
+        "rule_instructions": "Never raise this more than once per markdown document."
+    },
+    {
+        "id": "MD005",
+        "title": "Include a table of contents for long documents",
+        "description": "Documents longer than a few sections should include a table of contents.",
+        "severity": "critical",
+        "code_smells": [
+            "Long documents without a table of contents or TOC generator"
+        ],
+        "rule_instructions": "Do not enforce for short documents. Only raise when navigation clearly suffers."
+    },
+    {
+        "id": "MD006",
+        "title": "Ensure readability and grammar",
+        "description": "Markdown content must be written in clear, grammatically correct language.",
+        "severity": "warning",
+        "code_smells": [
+            "Frequent spelling mistakes or typos",
+            "Run-on sentences that obscure meaning",
+            "Excessive jargon without explanation",
+            "Poor grammar that reduces clarity"
+        ],
+        "rule_instructions": "Do not nitpick. Only raise when the readability of grammar is very bad. If you see this in a document more than 3 times, raise it as 1 consolidated comment at the top of the document instead of leaving many comments."
+    }
+]

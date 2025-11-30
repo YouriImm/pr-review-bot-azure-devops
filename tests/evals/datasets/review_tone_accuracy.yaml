@@ -1,0 +1,40 @@
+cases:
+  - name: PY001_prints_in_code
+    inputs:
+      file_path: irrelevant_placeholder_string.py
+      file_content_path: fixtures/python/prints_in_code.py
+    evaluators:
+      - LLMJudge:
+          rubric: Response's problem description is informative and professional in tone.
+          model: anthropic:claude-haiku-4-5
+      - LLMJudge:
+          rubric: Response's expected fix is clear enough for a medior developer to follow up on.
+          model: anthropic:claude-haiku-4-5
+      - LLMJudge:
+          rubric: Response does not contain more than one ReviewComment relating to the print rule violation.
+          model: anthropic:claude-haiku-4-5
+  - name: PY003_needs_output_model
+    inputs:
+      file_path: irrelevant_placeholder_string.py
+      file_content_path: fixtures/python/needs_output_model.py
+    evaluators:
+      - LLMJudge:
+          rubric: Response's problem description is informative and professional in tone.
+          model: anthropic:claude-haiku-4-5
+      - LLMJudge:
+          rubric: Response's expected fix is clear enough for a medior developer to follow up on.
+          model: anthropic:claude-haiku-4-5
+  - name: PY012_hardcoded_api_key
+    inputs:
+      file_path: irrelevant_placeholder_string.py
+      file_content_path: fixtures/python/hardcoded_api_key.py
+    evaluators:
+      - LLMJudge:
+          rubric: Response's problem description is informative and professional in tone.
+          model: anthropic:claude-haiku-4-5
+      - LLMJudge:
+          rubric: Response makes the criticality of a security violation explicit.
+          model: anthropic:claude-haiku-4-5
+      - LLMJudge:
+          rubric: Response's expected fix is clear enough for a medior developer to follow up on.
+          model: anthropic:claude-haiku-4-5

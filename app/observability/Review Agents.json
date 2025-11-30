@@ -1,0 +1,419 @@
+{
+  "kind": "Dashboard",
+  "metadata": {
+    "name": "Review Agents",
+    "createdAt": "2025-09-11T07:45:59.851303Z",
+    "updatedAt": "2025-11-21T13:44:27.759290Z",
+    "version": 0,
+    "project": "azdo-pr-bot"
+  },
+  "spec": {
+    "display": {
+      "name": "tst",
+      "description": null
+    },
+    "panels": {
+      "Repos": {
+        "kind": "Panel",
+        "spec": {
+          "display": {
+            "name": "Review count by Repository",
+            "description": "The number of distinct agent PR reviews per repository"
+          },
+          "plugin": {
+            "kind": "BarChart",
+            "spec": {
+              "mode": "value",
+              "sort": "desc",
+              "format": {
+                "unit": "decimal",
+                "shortValues": true
+              },
+              "showValues": true,
+              "calculation": "last"
+            }
+          },
+          "queries": [
+            {
+              "kind": "NonTimeSeriesQuery",
+              "spec": {
+                "plugin": {
+                  "kind": "LogfireNonTimeSeriesQuery",
+                  "spec": {
+                    "query": "select count(trace_id) as 'PR Review Count', attributes->'tool_response'->'repository'->>'name' as Repository\nFROM records\nWHERE trace_id IN (\n    SELECT trace_id\n    FROM records\n    WHERE span_name LIKE '%pull-request%'\n) \n  AND attributes->'tool_response'->'repository'->>'name' is not NULL\ngroup by Repository"
+                  }
+                }
+              }
+            }
+          ]
+        }
+      },
+      "Tracecount": {
+        "kind": "Panel",
+        "spec": {
+          "display": {
+            "name": "Reviews"
+          },
+          "plugin": {
+            "kind": "Values",
+            "spec": {}
+          },
+          "queries": [
+            {
+              "kind": "NonTimeSeriesQuery",
+              "spec": {
+                "plugin": {
+                  "kind": "LogfireNonTimeSeriesQuery",
+                  "spec": {
+                    "query": "SELECT COUNT(distinct(trace_id)) as 'Initiated Reviews' from records WHERE trace_id IN (\n    SELECT trace_id\n    FROM records\n    WHERE span_name LIKE '%pull-requests%'\n)"
+                  }
+                }
+              }
+            }
+          ]
+        }
+      },
+      "Mytesttable": {
+        "kind": "Panel",
+        "spec": {
+          "display": {
+            "name": "Review History",
+            "description": "Click through via trace_id to see a deepdive of that specific review run"
+          },
+          "plugin": {
+            "kind": "Table",
+            "spec": {}
+          },
+          "queries": [
+            {
+              "kind": "NonTimeSeriesQuery",
+              "spec": {
+                "plugin": {
+                  "kind": "LogfireNonTimeSeriesQuery",
+                  "spec": {
+                    "query": "SELECT\n    trace_id,\n    date_trunc('second', MIN(start_timestamp)) AS \"Start Time\",\n  EXTRACT(EPOCH FROM MAX(end_timestamp) - MIN(start_timestamp)) AS \"Duration (sec)\",\n    COUNT(\n        CASE\n            WHEN attributes->>'gen_ai.tool.name' = 'create_pull_request_thread'\n                 AND attributes->'tool_arguments'->'thread_context'->>'filePath' IS NOT NULL\n                 AND span_name = 'running tool'\n            THEN 1\n            ELSE NULL\n        END\n    ) AS \"Comments\",\n    sum((attributes->>'operation.cost')::NUMERIC) AS \"Agent Run Cost ($)\",\n    min(attributes->'tool_response'->'repository'->>'name') AS \"Repository\", \n    min(attributes->'tool_response'->'repository'->>'webUrl') || '/pullrequest/' || min((attributes->'tool_arguments'->>'pull_request_id')) as \"PR Hyperlink\"\nFROM records\nWHERE trace_id IN (\n    SELECT trace_id\n    FROM records\n    WHERE span_name LIKE '%pull-requests%'\n)\nGROUP BY trace_id\nORDER BY \"Start Time\" desc;\n"
+                  }
+                }
+              }
+            }
+          ]
+        }
+      },
+      "Tracecount-1": {
+        "kind": "Panel",
+        "spec": {
+          "display": {
+            "name": "Comments"
+          },
+          "plugin": {
+            "kind": "Values",
+            "spec": {}
+          },
+          "queries": [
+            {
+              "kind": "NonTimeSeriesQuery",
+              "spec": {
+                "plugin": {
+                  "kind": "LogfireNonTimeSeriesQuery",
+                  "spec": {
+                    "query": "SELECT COUNT(\n        CASE\n            WHEN attributes->>'gen_ai.tool.name' = 'create_pull_request_thread'\n                 AND attributes->'tool_arguments'->'thread_context'->>'filePath' IS NOT NULL\n                 AND span_name = 'running tool'\n            THEN 1\n            ELSE NULL\n        END\n    ) AS 'Codebase Comments' from records WHERE trace_id IN (\n    SELECT trace_id\n    FROM records\n    WHERE span_name LIKE '%pull-requests%'\n)"
+                  }
+                }
+              }
+            }
+          ]
+        }
+      },
+      "TotalAgentCost": {
+        "kind": "Panel",
+        "spec": {
+          "display": {
+            "name": "Review Bot Costs"
+          },
+          "plugin": {
+            "kind": "Values",
+            "spec": {}
+          },
+          "queries": [
+            {
+              "kind": "NonTimeSeriesQuery",
+              "spec": {
+                "plugin": {
+                  "kind": "LogfireNonTimeSeriesQuery",
+                  "spec": {
+                    "query": "SELECT '$' || COALESCE(ROUND(sum((attributes->>'operation.cost')::NUMERIC), 2), 0) AS \"Agent Run Cost\" from records"
+                  }
+                }
+              }
+            }
+          ]
+        }
+      },
+      "ReviewerAgentCalls": {
+        "kind": "Panel",
+        "spec": {
+          "display": {
+            "name": "Reviewer Agent Invocations ",
+            "description": "Split on language dimension. Covers agent invocations, not actual review comments left. "
+          },
+          "plugin": {
+            "kind": "TimeSeriesChart",
+            "spec": {
+              "yAxis": {
+                "show": true,
+                "label": "Agent Runs",
+                "format": {
+                  "unit": "decimal",
+                  "shortValues": true,
+                  "decimalPlaces": 0
+                }
+              },
+              "legend": {
+                "position": "bottom"
+              },
+              "visual": {
+                "palette": {
+                  "mode": "categorical"
+                },
+                "lineWidth": 1.25,
+                "areaOpacity": 0.3,
+                "pointRadius": 2.75,
+                "connectNulls": true
+              }
+            }
+          },
+          "queries": [
+            {
+              "kind": "TimeSeriesQuery",
+              "spec": {
+                "plugin": {
+                  "kind": "LogfireTimeSeriesQuery",
+                  "spec": {
+                    "query": "SELECT \n  time_bucket($resolution, start_timestamp) AS time,\n  CASE \n    WHEN INITCAP(REPLACE(attributes->>'gen_ai.tool.name', '_', ' ')) LIKE 'Sql %'\n    THEN REPLACE(INITCAP(REPLACE(attributes->>'gen_ai.tool.name', '_', ' ')), 'Sql', 'SQL')\n    ELSE INITCAP(REPLACE(attributes->>'gen_ai.tool.name', '_', ' '))\n  END AS \"Language Agent\",\n  COUNT(*) AS \"Reviewer Agent Executions\"\nFROM records\nWHERE attributes->>'gen_ai.tool.name' like '%_reviewer%'\nGROUP BY time, \"Language Agent\"\nORDER BY time",
+                    "groupBy": "Language Agent",
+                    "metrics": [
+                      "Reviewer Agent Executions"
+                    ]
+                  }
+                }
+              }
+            }
+          ]
+        }
+      },
+      "Reviewfilecoverage": {
+        "kind": "Panel",
+        "spec": {
+          "display": {
+            "name": "File coverage",
+            "description": "The percentage of files which were reviewed by an agent as compared to the total amount of files brought for PR review"
+          },
+          "plugin": {
+            "kind": "GaugeChart",
+            "spec": {
+              "format": {
+                "unit": "percent-decimal"
+              },
+              "thresholds": {
+                "mode": "percent",
+                "steps": [
+                  {
+                    "color": "#f97316",
+                    "value": 50
+                  },
+                  {
+                    "color": "#eab308",
+                    "value": 60
+                  },
+                  {
+                    "color": "#22c55e",
+                    "value": 80
+                  }
+                ],
+                "defaultColor": "#ef4444"
+              },
+              "calculation": "sum"
+            }
+          },
+          "queries": [
+            {
+              "kind": "TimeSeriesQuery",
+              "spec": {
+                "plugin": {
+                  "kind": "LogfireTimeSeriesQuery",
+                  "spec": {
+                    "query": "WITH review_counts AS (\n  SELECT \n    COUNT(DISTINCT span_id) AS review_count\n  FROM records\n  WHERE attributes->>'gen_ai.tool.name' LIKE '%_reviewer%'\n),\nchanges_counts AS (\n  SELECT \n    COUNT(*) AS changes_count\n  FROM records\n  CROSS JOIN generate_series(0, 99) AS t(idx)\n  WHERE attributes->'tool_response'->'changes'->idx IS NOT NULL\n)\nSELECT \n  CURRENT_TIMESTAMP AS time,\n  CASE \n    WHEN c.changes_count > 0 \n    THEN CAST(r.review_count AS FLOAT) / c.changes_count\n    ELSE 0 \n  END AS ratio\nFROM review_counts r\nCROSS JOIN changes_counts c;\n",
+                    "metrics": [
+                      "ratio"
+                    ]
+                  }
+                }
+              }
+            }
+          ]
+        }
+      },
+      "Reviewcommentsperlanguage": {
+        "kind": "Panel",
+        "spec": {
+          "display": {
+            "name": "Review comments per language",
+            "description": ""
+          },
+          "plugin": {
+            "kind": "BarChart",
+            "spec": {
+              "mode": "value",
+              "sort": "desc",
+              "format": {
+                "unit": "decimal",
+                "shortValues": true
+              },
+              "showValues": true,
+              "calculation": "last",
+              "orientation": "vertical"
+            }
+          },
+          "queries": [
+            {
+              "kind": "NonTimeSeriesQuery",
+              "spec": {
+                "plugin": {
+                  "kind": "LogfireNonTimeSeriesQuery",
+                  "spec": {
+                    "query": "SELECT \n  regexp_match(\n    attributes->'tool_arguments'->'thread_context'->>'filePath',\n    '(\\.[^.]+)$'\n  )[1] as extension,\n  COUNT(*) as count\nFROM records \nWHERE attributes->'tool_arguments'->'thread_context'->>'filePath' IS NOT NULL\nGROUP BY extension\nORDER BY count DESC"
+                  }
+                }
+              }
+            }
+          ]
+        }
+      },
+      "CommonReviewIssues-Indetail-1": {
+        "kind": "Panel",
+        "spec": {
+          "display": {
+            "name": "Most common rule violations"
+          },
+          "plugin": {
+            "kind": "Table",
+            "spec": {}
+          },
+          "queries": [
+            {
+              "kind": "NonTimeSeriesQuery",
+              "spec": {
+                "plugin": {
+                  "kind": "LogfireNonTimeSeriesQuery",
+                  "spec": {
+                    "query": "SELECT \n  attributes->'tool_response'->idx->'review_comment'->>'rule_title' as \"Category\",\n  attributes->'tool_response'->idx->'review_comment'->>'rule_id' as \"Item ID\",\n  count(*) as \"Occurences\",\n  regexp_match(attributes->'tool_response'->idx->>'file_path', '(\\.[^.]+)$')[1] as \"Language\"\nFROM records\nCROSS JOIN generate_series(0, 150) AS t(idx)\nWHERE attributes->'tool_response'->idx->>'review_comment'->'problem_description' IS NOT NULL\ngroup by \"Category\", \"Item ID\", \"Language\"\norder by \"Occurences\" desc"
+                  }
+                }
+              }
+            }
+          ]
+        }
+      }
+    },
+    "layouts": [
+      {
+        "kind": "Grid",
+        "spec": {
+          "display": {
+            "title": "Reviews",
+            "collapse": {
+              "open": true
+            }
+          },
+          "items": [
+            {
+              "x": 0,
+              "y": 0,
+              "width": 3,
+              "height": 6,
+              "content": {
+                "$ref": "#/spec/panels/Tracecount"
+              }
+            },
+            {
+              "x": 3,
+              "y": 0,
+              "width": 3,
+              "height": 6,
+              "content": {
+                "$ref": "#/spec/panels/Tracecount-1"
+              }
+            },
+            {
+              "x": 6,
+              "y": 0,
+              "width": 3,
+              "height": 6,
+              "content": {
+                "$ref": "#/spec/panels/TotalAgentCost"
+              }
+            },
+            {
+              "x": 9,
+              "y": 0,
+              "width": 5,
+              "height": 6,
+              "content": {
+                "$ref": "#/spec/panels/Reviewfilecoverage"
+              }
+            },
+            {
+              "x": 14,
+              "y": 0,
+              "width": 10,
+              "height": 6,
+              "content": {
+                "$ref": "#/spec/panels/ReviewerAgentCalls"
+              }
+            },
+            {
+              "x": 0,
+              "y": 6,
+              "width": 24,
+              "height": 6,
+              "content": {
+                "$ref": "#/spec/panels/Mytesttable"
+              }
+            },
+            {
+              "x": 0,
+              "y": 12,
+              "width": 11,
+              "height": 7,
+              "content": {
+                "$ref": "#/spec/panels/Reviewcommentsperlanguage"
+              }
+            },
+            {
+              "x": 11,
+              "y": 12,
+              "width": 11,
+              "height": 7,
+              "content": {
+                "$ref": "#/spec/panels/CommonReviewIssues-Indetail-1"
+              }
+            },
+            {
+              "x": 0,
+              "y": 19,
+              "width": 11,
+              "height": 8,
+              "content": {
+                "$ref": "#/spec/panels/Repos"
+              }
+            }
+          ]
+        }
+      }
+    ],
+    "variables": [],
+    "duration": "7d",
+    "refreshInterval": "0s",
+    "datasources": {}
+  }
+}

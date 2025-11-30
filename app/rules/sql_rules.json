@@ -1,0 +1,124 @@
+[
+    {
+        "id": "SQL001",
+        "title": "Filter early",
+        "description": "Apply restrictive WHERE conditions as close to the base tables as possible (inside CTEs or before joins).",
+        "severity": "critical",
+        "code_smells": [
+            "Filters applied only in the final SELECT",
+            "Large intermediate CTEs without WHERE clauses",
+            "Joins performed before obvious row-reducing filters"
+        ]
+    },
+    {
+        "id": "SQL002",
+        "title": "Avoid SELECT * or needless columns",
+        "description": "Retrieve only the columns you need.",
+        "severity": "critical",
+        "code_smells": [
+            "Use of SELECT * in queries",
+            "Subqueries returning unused columns"
+        ]
+    },
+    {
+        "id": "SQL003",
+        "title": "Avoid cartesian joins",
+        "description": "Do not use cartesian joins unless absolutely required, as they are expensive and often accidental.",
+        "severity": "critical",
+        "code_smells": [
+            "JOIN without ON clause",
+            "Unexpected row explosion after join"
+        ]
+    },
+    {
+        "id": "SQL004",
+        "title": "Avoid excessive nesting",
+        "description": "Flatten queries where possible. Excessive nesting reduces readability and can harm performance.",
+        "severity": "error",
+        "code_smells": [
+            "Deeply nested subqueries",
+            "Multiple layers of SELECT wrapping"
+        ]
+    },
+    {
+        "id": "SQL005",
+        "title": "Use CTEs with meaningful aliases",
+        "description": "Use CTEs for complex logic and give them meaningful aliases. Always use AS when defining CTEs.",
+        "severity": "warning",
+        "code_smells": [
+            "Single-letter aliases",
+            "CTEs without AS keyword",
+            "Ambiguous or unclear alias names"
+        ]
+    },
+    {
+        "id": "SQL006",
+        "title": "Capitalize SQL keywords and use snake_case",
+        "description": "Capitalize SQL keywords (SELECT, FROM, WHERE) and use snake_case for identifiers to ensure consistency and readability.",
+        "severity": "warning",
+        "code_smells": [
+            "Lowercase SQL keywords",
+            "CamelCase or inconsistent identifier naming"
+        ]
+    },
+    {
+        "id": "SQL007",
+        "title": "Handle NULLs explicitly",
+        "description": "Always handle NULL values explicitly in joins, filters, and aggregations to avoid unexpected results.",
+        "severity": "critical",
+        "code_smells": [
+            "JOIN conditions without NULL handling",
+            "Filters ignoring NULL semantics",
+            "Aggregations miscounting due to NULLs"
+        ]
+    },
+    {
+        "id": "SQL008",
+        "title": "Never assume implicit ordering",
+        "description": "Always use ORDER BY explicitly if order matters. Do not rely on implicit ordering from GROUP BY or engine defaults.",
+        "severity": "error",
+        "code_smells": [
+            "Queries relying on default ordering",
+            "GROUP BY without explicit ORDER BY when order is required"
+        ]
+    },
+    {
+        "id": "SQL009",
+        "title": "Prefer window functions over subqueries",
+        "description": "Use window functions instead of correlated or nested subqueries for ranking, running totals, and similar patterns.",
+        "severity": "warning",
+        "code_smells": [
+            "Correlated subqueries in SELECT or WHERE",
+            "Nested subqueries for ranking or aggregation"
+        ]
+    },
+    {
+        "id": "SQL010",
+        "title": "Avoid SELECT DISTINCT misuse",
+        "description": "Use DISTINCT only when logically required. Do not use it to mask join duplication or poor query design.",
+        "severity": "error",
+        "code_smells": [
+            "DISTINCT applied after improper joins"
+        ]
+    },
+    {
+        "id": "SQL011",
+        "title": "Consistent JOIN formatting",
+        "description": "Format JOINs with each JOIN on a new line and ON clauses indented for readability in multi-join queries.",
+        "severity": "warning",
+        "code_smells": [
+            "Inconsistent formatting across queries",
+            "JOIN and ON clauses inline without indentation"
+        ]
+    },
+    {
+        "id": "SQL012",
+        "title": "Avoid magic constants in filters",
+        "description": "Do not use unexplained numeric or string constants in WHERE clauses. Use descriptive values, lookup tables, or comments.",
+        "severity": "warning",
+        "code_smells": [
+            "WHERE status = 3 without explanation",
+            "Hardcoded codes or flags without context"
+        ]
+    }
+]

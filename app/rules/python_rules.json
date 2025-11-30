@@ -1,0 +1,185 @@
+[
+    {
+        "id": "PY001",
+        "title": "Use logger instead of print",
+        "description": "Always use a structured logger (i.e. loguru or Python's default logger) instead of print statements to provide informative, leveled, and persistent logs.",
+        "severity": "warning",
+        "code_smells": [
+            "Use of print() for debugging or runtime information",
+            "Lack of log levels (INFO, DEBUG, ERROR)",
+            "Unstructured console output"
+        ],
+        "rule_instructions": "When you have discovered more than 1 violation of this rule in a script, only raise it once. In your comment emphasize that there may be other print rule violations in the code."
+    },
+    {
+        "id": "PY002",
+        "title": "Annotate functions and classes",
+        "description": "Functions and classes must include type annotations to improve readability and predictability.",
+        "severity": "critical",
+        "code_smells": [
+            "Missing type hints on function parameters or return values",
+            "Unannotated class attributes",
+            "Opaque variable assignments without type clarity"
+        ]
+    },
+    {
+        "id": "PY003",
+        "title": "Use input/output models instead of raw dicts for all except small, trivial objects",
+        "description": "Prefer TypedDict, dataclasses, or Pydantic models over raw dictionaries or tuples that are more than a few keys in size to ensure type safety, validation, and readability.",
+        "severity": "warning",
+        "code_smells": [
+            "Functions accepting or returning untyped dicts",
+            "Opaque tuple-based data structures",
+            "Lack of validation on structured inputs"
+        ],
+        "rule_instructions": "Do not be too critical about this rule. Small dicts / tuples are fine. If a model wouldn't add meaningful extra clarity, don't consider its absence a violation."
+    },
+    {
+        "id": "PY004",
+        "title": "Docstrings are mandatory",
+        "description": "All classes and functions must include docstrings that concisely describe their behavior, inputs, and outputs, following PEP 257 conventions.",
+        "severity": "critical",
+        "code_smells": [
+            "Functions or classes without docstrings where they should be",
+            "Docstrings missing parameter or return descriptions",
+            "Inconsistent formatting of docstrings"
+        ]
+    },
+    {
+        "id": "PY005",
+        "title": "Explicit error handling",
+        "description": "Errors must be explicitly caught, logged, and handled with fallback mechanisms or clear error messages.",
+        "severity": "critical",
+        "code_smells": [
+            "Uncaught exceptions causing crashes",
+            "Bare try/except without logging",
+            "Generic exception handling without meaningful fallback"
+        ],
+        "rule_instructions": "Do not be too critical about this rule. Small dicts / tuples are fine. If a model wouldn't add meaningful extra clarity, don't consider its absence a violation.."
+    },
+    {
+        "id": "PY007",
+        "title": "Avoid unnecessary repetition (DRY principle)",
+        "description": "Avoid repeating the same code more than twice. If a pattern occurs three times, refactor into a shared function or class.",
+        "severity": "error",
+        "code_smells": [
+            "Identical logic blocks repeated across classes or functions",
+            "Copy-pasted code instead of reusable abstractions",
+            "Violation of DRY principle leading to maintenance risks"
+        ],
+        "rule_instructions": "Do not be too critical about this rule. Sometimes repetition is justifiable if it improves readability."
+    },
+    {
+        "id": "PY008",
+        "title": "PEP 8 compliance with adjusted line length",
+        "description": "Code must follow PEP 8 style guidelines, but the 79-character line length limit can be ignored.",
+        "severity": "warning",
+        "code_smells": [
+            "Non-PEP8 compliant formatting",
+            "Excessive deviation from standard naming or spacing",
+            "Lines exceeding 120 characters without justification"
+        ],
+        "rule_instructions": "When you have discovered more than 1 violation of this rule in a script, only raise it once. In your comment emphasize that there may be other PEP8 violations."
+    },
+    {
+        "id": "PY009",
+        "title": "Use reasonable and descriptive names",
+        "description": "Files, classes, functions, and variables must have descriptive, context-aware names that balance brevity with clarity. Avoid cryptic abbreviations or overly generic names.",
+        "severity": "warning",
+        "code_smells": [
+            "Variables/classes/functions with overly short names like x, y, data, or df",
+            "Cryptic abbreviations (e.g., s_p instead of source_properties)",
+            "Overly verbose names that reduce readability"
+        ],
+        "rule_instructions": "Be mindful about code context. Naming a variable x within a list comprehension is obviously fine and not an error."
+    },
+    {
+        "id": "PY010",
+        "title": "Prioritize readability over technical cleverness",
+        "description": "Code should be written with readability in mind, avoiding overly fancy or cryptic constructs that make it harder for others (or your future self) to understand.",
+        "severity": "warning",
+        "code_smells": [
+            "Complex one-liners that obscure intent",
+            "Nested or overly compact expressions that reduce clarity",
+            "Code optimized for brevity at the expense of readability"
+        ]
+    },
+    {
+        "id": "PY011",
+        "title": "Comments should explain 'why', not 'what'",
+        "description": "Comments must focus on explaining the reasoning behind code decisions rather than restating what the code already makes obvious.",
+        "severity": "warning",
+        "code_smells": [
+            "Comments that duplicate code behavior (e.g., '# delete blob if it exists')",
+            "Over-commenting trivial operations",
+            "Lack of explanation for non-obvious design choices"
+        ]
+    },
+    {
+        "id": "PY012",
+        "title": "Avoid hardcoded secrets",
+        "description": "Never hardcode passwords, API keys, tokens, or other sensitive information directly in source code. Use environment variables or secret managers instead.",
+        "severity": "critical",
+        "code_smells": [
+            "String literals resembling API keys or passwords",
+            "Direct assignment of tokens in code",
+            "Credentials embedded in function parameters"
+        ]
+    },
+    {
+        "id": "PY013",
+        "title": "Restrict wildcard imports",
+        "description": "Avoid using 'from module import *' as it pollutes the namespace and makes dependencies unclear.",
+        "severity": "error",
+        "code_smells": [
+            "Use of 'from X import *'",
+            "Ambiguous references to functions or classes without explicit imports"
+        ]
+    },
+    {
+        "id": "PY014",
+        "title": "Use context managers for resources",
+        "description": "Always use context managers (with statements) for files, network connections, or database sessions to ensure proper cleanup.",
+        "severity": "error",
+        "code_smells": [
+            "Open files without 'with open(...) as f:'",
+            "Database or network connections not closed explicitly",
+            "Manual resource cleanup scattered across code"
+        ],
+        "rule_instructions": "Be critical about cases where connections are opened but not closed. Be more forgiving when the code does not make transparent if a context manager is truly needed."
+    },
+    {
+        "id": "PY016",
+        "title": "Validate external input",
+        "description": "Always validate and sanitize external input (user data, API responses, file contents) before processing.",
+        "severity": "critical",
+        "code_smells": [
+            "Direct use of user input in function logic without checks",
+            "Parsing external data without validation",
+            "Assuming API responses always contain expected fields without a validation check (or Pydantic model)"
+        ]
+    },
+    {
+        "id": "PY017",
+        "title": "Avoid excessive function length",
+        "description": "Functions should be concise and focused. If a function grows beyond ~30–40 lines, consider refactoring.",
+        "severity": "warning",
+        "code_smells": [
+            "Functions spanning multiple screens",
+            "Functions handling multiple responsibilities",
+            "Deeply nested control structures"
+        ]
+    },
+    {
+        "id": "PY018",
+        "title": "Avoid excessive class length",
+        "description": "Classes should remain focused and cohesive. If a class grows too large (e.g., hundreds of lines or too many responsibilities), it should be refactored into smaller, more specialized classes.",
+        "severity": "warning",
+        "code_smells": [
+            "Classes spanning multiple screens or hundreds of lines",
+            "Classes containing unrelated methods or responsibilities",
+            "Deeply nested inner classes or excessive attributes",
+            "Violations of the Single Responsibility Principle (SRP)"
+        ]
+    }
+]

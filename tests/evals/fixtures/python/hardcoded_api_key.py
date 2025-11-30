@@ -11,7 +11,7 @@ def fetch_user_data(user_id: str) -> Optional[Dict]:
     Returns:
         Dictionary containing user data if successful, None otherwise
     """
-    api_key = "sk_live_51AB2cDEF3ghIJklMNop4567"
+    api_key = "sk_live_51AB2cDEF3ghIJklMNop4567_verydangerous"
     headers = {"Authorization": f"Bearer {api_key}", "Content-Type": "application/json"}
 
     try:
